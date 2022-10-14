@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using LIBII.Light2D;
 using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
@@ -132,9 +133,7 @@ namespace Custom2DLightRenderFeature
             var albedo = new AttachmentDescriptor(cameraTextureDesc.colorFormat);
             var albedo1 = new AttachmentDescriptor(cameraTextureDesc.colorFormat);
             var finalAlbedo = new AttachmentDescriptor(cameraTextureDesc.colorFormat);
-#if UNITY_EDITOR
-            var depth = new AttachmentDescriptor(RenderTextureFormat.Depth);
-#endif
+            var depth = new AttachmentDescriptor(SystemInfo.GetGraphicsFormat(DefaultFormat.DepthStencil));
 
             albedo.ConfigureTarget(m_CameraTargetAttachmentA.id, false, true);
             albedo1.ConfigureTarget(m_LightDepth.id, false, true);
@@ -143,11 +142,8 @@ namespace Custom2DLightRenderFeature
 
             albedo.ConfigureClear(Color.clear, 1, 0);
             albedo1.ConfigureClear(Color.clear, 1, 0);
-#if UNITY_EDITOR
             depth.ConfigureClear(Color.clear, 1.0f, 0);
-#endif
             const int indexAlbedo = 0, indexAlbedo1 = 1, indexFinal = 2, indexDepth = 3;
-
 
             var attachments = new NativeArray<AttachmentDescriptor>(
 #if UNITY_EDITOR
@@ -160,16 +156,10 @@ namespace Custom2DLightRenderFeature
             attachments[indexAlbedo1] = albedo1;
             attachments[indexFinal] = finalAlbedo;
 
-#if UNITY_EDITOR
             attachments[indexDepth] = depth;
-#endif
 
             using (context.BeginScopedRenderPass(camera.pixelWidth, camera.pixelHeight, 1, attachments,
-#if UNITY_EDITOR
-                       indexDepth
-#else
-                -1
-#endif
+                       indexDepth 
                    ))
             {
                 attachments.Dispose();
