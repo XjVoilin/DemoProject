@@ -191,7 +191,7 @@
       "url": "http://192.168.0.148:4873"
     },
     "com.libii.unitysound": {
-      "version": "1.1.6-test18",
+      "version": "1.1.7-test12",
       "depth": 0,
       "source": "registry",
       "dependencies": {
